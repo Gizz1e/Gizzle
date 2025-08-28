@@ -480,6 +480,8 @@ const UploadSection = ({ category }) => {
 const ContentGallery = ({ category }) => {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoPlayerOpen, setVideoPlayerOpen] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState(null);
 
   useEffect(() => {
     fetchContent();
@@ -494,6 +496,18 @@ const ContentGallery = ({ category }) => {
       console.error('Error fetching content:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openVideoPlayer = (item) => {
+    if (category === 'videos') {
+      setCurrentVideo({
+        src: `${API}/content/file/${item.filename}`,
+        title: item.original_filename,
+        description: item.description || `Uploaded on ${new Date(item.upload_timestamp).toLocaleDateString()}`,
+        poster: item.thumbnail_id ? `${API}/content/file/${item.thumbnail_id}` : null
+      });
+      setVideoPlayerOpen(true);
     }
   };
 
@@ -528,7 +542,7 @@ const ContentGallery = ({ category }) => {
       ) : (
         <div className="gallery-grid">
           {content.map((item) => (
-            <div key={item.id} className="gallery-item">
+            <div key={item.id} className="gallery-item" onClick={() => openVideoPlayer(item)}>
               <div className="item-preview">
                 {category === 'pictures' ? (
                   <img 
@@ -565,6 +579,18 @@ const ContentGallery = ({ category }) => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Video Player */}
+      {videoPlayerOpen && currentVideo && (
+        <VideoPlayer
+          isOpen={videoPlayerOpen}
+          onClose={() => setVideoPlayerOpen(false)}
+          videoSrc={currentVideo.src}
+          title={currentVideo.title}
+          description={currentVideo.description}
+          poster={currentVideo.poster}
+        />
       )}
     </div>
   );
