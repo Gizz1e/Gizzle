@@ -646,6 +646,10 @@ const UploadSection = ({ category }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [fileSize, setFileSize] = useState(0);
+  const [uploadSpeed, setUploadSpeed] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -673,28 +677,76 @@ const UploadSection = ({ category }) => {
     }
   };
 
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const formatTime = (seconds) => {
+    if (seconds < 60) return `${Math.round(seconds)}s`;
+    if (seconds < 3600) return `${Math.round(seconds / 60)}m ${Math.round(seconds % 60)}s`;
+    return `${Math.round(seconds / 3600)}h ${Math.round((seconds % 3600) / 60)}m`;
+  };
+
   const handleFileUpload = async (file) => {
+    // Check file size (allow up to 10GB for high-quality videos)
+    const maxSize = category === 'videos' ? 10 * 1024 * 1024 * 1024 : 100 * 1024 * 1024; // 10GB for videos, 100MB for pictures
+    
+    if (file.size > maxSize) {
+      setUploadStatus(`File too large. Maximum size: ${formatFileSize(maxSize)}`);
+      setTimeout(() => setUploadStatus(''), 5000);
+      return;
+    }
+
     setUploading(true);
-    setUploadStatus('Uploading...');
+    setUploadProgress(0);
+    setFileSize(file.size);
+    setUploadStatus(`Uploading ${formatFileSize(file.size)} file...`);
+    
+    const startTime = Date.now();
     
     const formData = new FormData();
     formData.append('file', file);
     formData.append('category', category);
-    formData.append('description', `Uploaded ${category.slice(0, -1)}`);
+    formData.append('description', `High-quality ${category.slice(0, -1)} - ${file.name}`);
     
     try {
       const response = await axios.post(`${API}/content/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(progress);
+          
+          // Calculate upload speed and time remaining
+          const elapsed = (Date.now() - startTime) / 1000;
+          const speed = progressEvent.loaded / elapsed;
+          const remaining = (progressEvent.total - progressEvent.loaded) / speed;
+          
+          setUploadSpeed(speed);
+          setTimeRemaining(remaining);
+          
+          setUploadStatus(`Uploading... ${progress}% - ${formatFileSize(speed)}/s - ${formatTime(remaining)} remaining`);
+        }
       });
       
-      setUploadStatus('Upload successful!');
-      setTimeout(() => setUploadStatus(''), 3000);
+      setUploadStatus('Upload successful! Processing high-quality video...');
+      setUploadProgress(100);
+      setTimeout(() => {
+        setUploadStatus('');
+        setUploadProgress(0);
+      }, 3000);
     } catch (error) {
       console.error('Upload error:', error);
-      setUploadStatus('Upload failed. Please try again.');
-      setTimeout(() => setUploadStatus(''), 3000);
+      setUploadStatus('Upload failed. Please check your connection and try again.');
+      setTimeout(() => {
+        setUploadStatus('');
+        setUploadProgress(0);
+      }, 5000);
     } finally {
       setUploading(false);
     }
@@ -702,9 +754,26 @@ const UploadSection = ({ category }) => {
 
   return (
     <div className="netflix-upload-section">
-      <h2>Upload Your Content</h2>
+      <div className="upload-header">
+        <h2>Upload High-Quality Content</h2>
+        <div className="upload-info">
+          <p>
+            {category === 'videos' 
+              ? 'Upload videos up to 10GB in 4K, 8K, or any high resolution format' 
+              : 'Upload pictures up to 100MB in high resolution'}
+          </p>
+          <div className="supported-formats">
+            <span>Supported formats:</span>
+            {category === 'videos' 
+              ? <span>MP4, MOV, AVI, MKV, WebM (4K, 8K supported)</span>
+              : <span>JPG, PNG, WebP, HEIC (RAW formats supported)</span>
+            }
+          </div>
+        </div>
+      </div>
+
       <div 
-        className={`upload-zone ${dragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
+        className={`upload-zone enhanced ${dragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -717,16 +786,56 @@ const UploadSection = ({ category }) => {
           accept={category === 'videos' ? 'video/*' : 'image/*'}
           disabled={uploading}
         />
-        <div className="upload-content">
-          <Upload size={48} className="upload-icon" />
-          <h3>Drag and drop your {category.slice(0, -1)} here</h3>
-          <p>or click to browse files</p>
-          {uploadStatus && (
-            <div className={`upload-status ${uploadStatus.includes('successful') ? 'success' : uploadStatus.includes('failed') ? 'error' : 'info'}`}>
-              {uploadStatus}
+        
+        {!uploading ? (
+          <div className="upload-content">
+            <Upload size={64} className="upload-icon" />
+            <h3>Drop your high-quality {category.slice(0, -1)} here</h3>
+            <p>or click to browse files</p>
+            <div className="upload-specs">
+              <div className="spec-item">
+                <strong>Max size:</strong> {category === 'videos' ? '10GB' : '100MB'}
+              </div>
+              <div className="spec-item">
+                <strong>Quality:</strong> {category === 'videos' ? 'Up to 8K resolution' : 'RAW formats supported'}
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="upload-progress-container">
+            <div className="upload-progress-circle">
+              <svg viewBox="0 0 36 36" className="circular-chart">
+                <path className="circle-bg"
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path className="circle"
+                  strokeDasharray={`${uploadProgress}, 100`}
+                  d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <text x="18" y="20.35" className="percentage">{Math.round(uploadProgress)}%</text>
+              </svg>
+            </div>
+            <div className="upload-details">
+              <h3>Uploading {formatFileSize(fileSize)}</h3>
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {uploadStatus && (
+          <div className={`upload-status enhanced ${uploadStatus.includes('successful') ? 'success' : uploadStatus.includes('failed') ? 'error' : 'info'}`}>
+            {uploadStatus}
+          </div>
+        )}
       </div>
     </div>
   );
