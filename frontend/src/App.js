@@ -750,6 +750,21 @@ const SubscriptionPlans = () => {
 
 // Gizzle TV Section Component
 const GizzleTVSection = () => {
+  const [videoPlayerOpen, setVideoPlayerOpen] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState(null);
+
+  const openVideoPlayer = (videoData) => {
+    setCurrentVideo(videoData);
+    setVideoPlayerOpen(true);
+  };
+
+  const featuredVideo = {
+    src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4",
+    title: "Rimmington",
+    description: "Exclusive Gizzle TV content featuring stunning visuals and entertainment",
+    poster: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
+  };
+
   return (
     <div className="gizzle-tv-section">
       <div className="section-header">
@@ -759,24 +774,24 @@ const GizzleTVSection = () => {
 
       <div className="featured-content">
         <div className="main-feature">
-          <div className="video-container">
-            <video 
-              className="featured-video"
-              controls
-              poster="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
-            >
-              <source 
-                src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4" 
-                type="video/mp4" 
-              />
-              Your browser does not support the video tag.
-            </video>
+          <div className="video-container" onClick={() => openVideoPlayer(featuredVideo)}>
+            <img 
+              src={featuredVideo.poster}
+              alt={featuredVideo.title}
+              className="featured-video-poster"
+            />
+            
+            <div className="video-play-overlay">
+              <div className="video-play-button">
+                <Play size={48} />
+              </div>
+            </div>
             
             <div className="video-overlay">
               <div className="video-info">
-                <h3>Rimmington</h3>
+                <h3>{featuredVideo.title}</h3>
                 <p className="video-description">
-                  Exclusive Gizzle TV content featuring stunning visuals and entertainment
+                  {featuredVideo.description}
                 </p>
                 <div className="video-stats">
                   <span className="stat-item">
@@ -795,7 +810,12 @@ const GizzleTVSection = () => {
 
         {/* Additional Content Grid */}
         <div className="content-grid">
-          <div className="content-card">
+          <div className="content-card" onClick={() => openVideoPlayer({
+            src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ttfzvpjp_GizzleSummer2.mp4",
+            title: "Gizzle Summer",
+            description: "Summer entertainment special from Gizzle TV",
+            poster: "https://images.unsplash.com/photo-1735212769704-d03b95dd1a14"
+          })}>
             <div className="content-image">
               <img 
                 src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14" 
@@ -880,6 +900,18 @@ const GizzleTVSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Video Player */}
+      {videoPlayerOpen && currentVideo && (
+        <VideoPlayer
+          isOpen={videoPlayerOpen}
+          onClose={() => setVideoPlayerOpen(false)}
+          videoSrc={currentVideo.src}
+          title={currentVideo.title}
+          description={currentVideo.description}
+          poster={currentVideo.poster}
+        />
+      )}
     </div>
   );
 };
