@@ -25,7 +25,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # GridFS for file storage
-fs = gridfs.GridFS(db.client[os.environ['DB_NAME']])
+fs = gridfs.GridFS(db)
 
 # Create the main app without a prefix
 app = FastAPI(title="Gizzle TV L.L.C. API", version="1.0.0")
