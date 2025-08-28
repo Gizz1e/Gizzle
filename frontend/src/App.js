@@ -605,6 +605,9 @@ const GizzleTVSection = () => {
     </div>
   );
 };
+
+// Store Component  
+const StoreSection = () => {
   const storeItems = [
     {
       id: 'premium_upload',
