@@ -7,6 +7,284 @@ import { Upload, Play, Image, Users, Crown, ShoppingBag, Menu, X, Star, Check, P
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// In-App Video Player Component
+const VideoPlayer = ({ isOpen, onClose, videoSrc, title, description, poster }) => {
+  const videoRef = useRef(null);
+  const progressRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBuffering, setIsBuffering] = useState(false);
+
+  const controlsTimeoutRef = useRef(null);
+
+  // Auto-hide controls after 3 seconds of inactivity
+  const resetControlsTimeout = () => {
+    setShowControls(true);
+    if (controlsTimeoutRef.current) {
+      clearTimeout(controlsTimeoutRef.current);
+    }
+    controlsTimeoutRef.current = setTimeout(() => {
+      if (isPlaying) {
+        setShowControls(false);
+      }
+    }, 3000);
+  };
+
+  // Video event handlers
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+      setIsLoading(false);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleWaiting = () => setIsBuffering(true);
+  const handleCanPlay = () => setIsBuffering(false);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleProgressClick = (e) => {
+    if (progressRef.current && videoRef.current) {
+      const rect = progressRef.current.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      const newTime = pos * duration;
+      videoRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (videoRef.current) {
+      videoRef.current.volume = newVolume;
+    }
+    setIsMuted(newVolume === 0);
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      const newMuted = !isMuted;
+      videoRef.current.muted = newMuted;
+      setIsMuted(newMuted);
+      if (newMuted) {
+        videoRef.current.volume = 0;
+      } else {
+        videoRef.current.volume = volume;
+      }
+    }
+  };
+
+  const skipTime = (seconds) => {
+    if (videoRef.current) {
+      const newTime = Math.max(0, Math.min(duration, currentTime + seconds));
+      videoRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      videoRef.current?.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isOpen) return;
+      
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          skipTime(-10);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          skipTime(10);
+          break;
+        case 'KeyM':
+          e.preventDefault();
+          toggleMute();
+          break;
+        case 'KeyF':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          onClose();
+          break;
+        default:
+          break;
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, isPlaying, currentTime, duration]);
+
+  // Reset player state when opening
+  useEffect(() => {
+    if (isOpen) {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setIsLoading(true);
+      setIsBuffering(false);
+      setShowControls(true);
+      resetControlsTimeout();
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="video-player-overlay" onClick={onClose}>
+      <div className="video-player-container" onClick={(e) => e.stopPropagation()}>
+        <button className="video-player-close" onClick={onClose}>
+          <X size={24} />
+        </button>
+
+        <div 
+          className="video-player-wrapper"
+          onMouseMove={resetControlsTimeout}
+          onMouseEnter={resetControlsTimeout}
+        >
+          <video
+            ref={videoRef}
+            className="video-player-video"
+            src={videoSrc}
+            poster={poster}
+            onLoadedMetadata={handleLoadedMetadata}
+            onTimeUpdate={handleTimeUpdate}
+            onWaiting={handleWaiting}
+            onCanPlay={handleCanPlay}
+            onEnded={() => setIsPlaying(false)}
+            onClick={togglePlay}
+          />
+
+          {/* Loading Spinner */}
+          {(isLoading || isBuffering) && (
+            <div className="video-player-loading">
+              <div className="loading-spinner"></div>
+              <p>{isLoading ? 'Loading video...' : 'Buffering...'}</p>
+            </div>
+          )}
+
+          {/* Play Button Overlay */}
+          {!isPlaying && !isLoading && (
+            <div className="video-player-play-overlay" onClick={togglePlay}>
+              <div className="video-player-play-button">
+                <Play size={48} />
+              </div>
+            </div>
+          )}
+
+          {/* Controls */}
+          <div className={`video-player-controls ${showControls ? 'show' : 'hide'}`}>
+            <div className="video-player-progress-container">
+              <div 
+                className="video-player-progress-bar"
+                ref={progressRef}
+                onClick={handleProgressClick}
+              >
+                <div 
+                  className="video-player-progress-filled"
+                  style={{ width: `${(currentTime / duration) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="video-player-controls-bottom">
+              <div className="video-player-controls-left">
+                <button className="video-control-btn" onClick={togglePlay}>
+                  {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                </button>
+
+                <button className="video-control-btn" onClick={() => skipTime(-10)}>
+                  <SkipBack size={20} />
+                </button>
+
+                <button className="video-control-btn" onClick={() => skipTime(10)}>
+                  <SkipForward size={20} />
+                </button>
+
+                <div className="video-player-volume">
+                  <button className="video-control-btn" onClick={toggleMute}>
+                    {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </button>
+                  <input
+                    type="range"
+                    className="volume-slider"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                  />
+                </div>
+
+                <div className="video-player-time">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </div>
+              </div>
+
+              <div className="video-player-controls-right">
+                <button className="video-control-btn" onClick={toggleFullscreen}>
+                  <Maximize size={20} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Video Info */}
+          <div className="video-player-info">
+            <h3>{title}</h3>
+            {description && <p>{description}</p>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Hero Section Component
 const HeroSection = () => {
   return (
