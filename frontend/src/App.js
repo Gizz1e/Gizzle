@@ -318,6 +318,12 @@ const NetflixHeader = ({ activeSection, setActiveSection }) => {
             Home
           </button>
           <button 
+            className={`nav-item ${activeSection === 'models' ? 'active' : ''}`}
+            onClick={() => setActiveSection('models')}
+          >
+            Models
+          </button>
+          <button 
             className={`nav-item ${activeSection === 'gizzle-tv' ? 'active' : ''}`}
             onClick={() => setActiveSection('gizzle-tv')}
           >
