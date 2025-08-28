@@ -405,9 +405,7 @@ const SubscriptionPlans = () => {
 
   const handleSubscribe = async (planId) => {
     try {
-      const response = await axios.post(`${API}/subscriptions/checkout`, {
-        plan_id: planId
-      });
+      const response = await axios.post(`${API}/subscriptions/checkout?plan_id=${planId}`);
       
       // In a real implementation, this would redirect to Stripe
       window.open(response.data.checkout_url, '_blank');
