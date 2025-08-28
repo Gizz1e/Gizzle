@@ -386,30 +386,12 @@ const HeroBanner = ({ onPlayClick }) => {
 
   return (
     <div className="hero-banner">
-      <div className="hero-video-background">
-        <video 
-          className="hero-bg-video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={heroContent.poster}
-        >
-          <source 
-            src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/9qtpz6ts_Movie.MOV" 
-            type="video/quicktime" 
-          />
-          <source 
-            src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/9qtpz6ts_Movie.MOV" 
-            type="video/mp4" 
-          />
-          {/* Fallback image if video doesn't load */}
-          <img 
-            src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14"
-            alt="Hero Background"
-            className="hero-bg-img"
-          />
-        </video>
+      <div className="hero-background">
+        <img 
+          src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/5xzuzie2_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.png"
+          alt="Gizzle TV Background"
+          className="hero-bg-img"
+        />
         <div className="hero-video-overlay"></div>
         <div className="hero-gradient-overlay"></div>
         <div className="hero-fade-animation"></div>
