@@ -474,7 +474,174 @@ const ContentRow = ({ title, items, onItemClick }) => {
   );
 };
 
-// Upload Section Component
+// Models Section Component
+const ModelsSection = ({ onVideoClick }) => {
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Sample model data - in production this would come from API
+    setModels([
+      {
+        id: 1,
+        name: "Sophia Chen",
+        category: "Fashion Model",
+        image: "https://images.unsplash.com/photo-1735212769704-d03b95dd1a14",
+        videos: 12,
+        subscribers: "2.3M",
+        verified: true,
+        featured: true
+      },
+      {
+        id: 2,
+        name: "Maya Rodriguez",
+        category: "Fitness Model",
+        image: "https://images.unsplash.com/photo-1735212659418-715ca2ff7c20",
+        videos: 8,
+        subscribers: "1.8M",
+        verified: true,
+        featured: false
+      },
+      {
+        id: 3,
+        name: "Elena Kowalski",
+        category: "Lifestyle Model",
+        image: "https://images.unsplash.com/photo-1726935068680-73cef7e8412b",
+        videos: 15,
+        subscribers: "3.1M",
+        verified: true,
+        featured: false
+      },
+      {
+        id: 4,
+        name: "Aria Thompson",
+        category: "Commercial Model",
+        image: "https://images.unsplash.com/photo-1685440663653-fa3e81dd109c",
+        videos: 6,
+        subscribers: "1.2M",
+        verified: false,
+        featured: false
+      },
+      {
+        id: 5,
+        name: "Luna Martinez",
+        category: "Creative Model",
+        image: "https://images.unsplash.com/photo-1616469829941-c7200edec809",
+        videos: 20,
+        subscribers: "4.5M",
+        verified: true,
+        featured: true
+      }
+    ]);
+    setLoading(false);
+  }, []);
+
+  const featuredModels = models.filter(model => model.featured);
+  const allModels = models;
+
+  return (
+    <div className="models-section">
+      <div className="models-hero">
+        <div className="models-hero-bg">
+          <img src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14" alt="Models Background" />
+          <div className="models-hero-gradient"></div>
+        </div>
+        <div className="models-hero-content">
+          <h1>Discover Amazing Models</h1>
+          <p>Connect with talented creators and explore exclusive content from verified models</p>
+          <button className="hero-btn primary">
+            <Star size={20} />
+            Become a Model
+          </button>
+        </div>
+      </div>
+
+      <div className="content-rows">
+        {/* Featured Models */}
+        <div className="content-row">
+          <h2 className="row-title">Featured Models</h2>
+          <div className="models-grid featured">
+            {featuredModels.map(model => (
+              <div key={model.id} className="model-card featured-card">
+                <div className="model-image">
+                  <img src={model.image} alt={model.name} />
+                  {model.verified && (
+                    <div className="verified-badge">
+                      <Check size={16} />
+                    </div>
+                  )}
+                  <div className="model-overlay">
+                    <button 
+                      className="view-profile-btn"
+                      onClick={() => onVideoClick && onVideoClick({
+                        src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4",
+                        title: `${model.name} - Portfolio`,
+                        description: `Exclusive content from ${model.name}, ${model.category}`,
+                        poster: model.image
+                      })}
+                    >
+                      View Profile
+                    </button>
+                  </div>
+                </div>
+                <div className="model-info">
+                  <h3>{model.name}</h3>
+                  <p className="model-category">{model.category}</p>
+                  <div className="model-stats">
+                    <span>{model.videos} videos</span>
+                    <span>{model.subscribers} subscribers</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* All Models */}
+        <div className="content-row">
+          <h2 className="row-title">All Models</h2>
+          <div className="models-grid">
+            {allModels.map(model => (
+              <div key={model.id} className="model-card">
+                <div className="model-image">
+                  <img src={model.image} alt={model.name} />
+                  {model.verified && (
+                    <div className="verified-badge">
+                      <Check size={16} />
+                    </div>
+                  )}
+                  <div className="model-overlay">
+                    <button 
+                      className="view-profile-btn"
+                      onClick={() => onVideoClick && onVideoClick({
+                        src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ttfzvpjp_GizzleSummer2.mp4",
+                        title: `${model.name} - Content`,
+                        description: `Watch ${model.name}'s latest content and portfolio`,
+                        poster: model.image
+                      })}
+                    >
+                      View Profile
+                    </button>
+                  </div>
+                </div>
+                <div className="model-info">
+                  <h3>{model.name}</h3>
+                  <p className="model-category">{model.category}</p>
+                  <div className="model-stats">
+                    <span>{model.videos} videos</span>
+                    <span>{model.subscribers} subscribers</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced Upload Section Component with larger file support
 const UploadSection = ({ category }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
