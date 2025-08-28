@@ -1173,6 +1173,8 @@ function App() {
         {renderContent()}
       </main>
 
+      <Footer />
+
       {/* Video Player */}
       {videoPlayerOpen && currentVideo && (
         <VideoPlayer
