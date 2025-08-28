@@ -181,8 +181,8 @@ class GizzleTVAPITester:
     def test_subscription_checkout(self):
         """Test subscription checkout creation"""
         try:
-            data = {"plan_id": "basic"}
-            response = requests.post(f"{self.base_url}/subscriptions/checkout", json=data, timeout=10)
+            # Send plan_id as query parameter
+            response = requests.post(f"{self.base_url}/subscriptions/checkout?plan_id=basic", timeout=10)
             
             # This might fail if Stripe is not configured, which is expected
             success = response.status_code in [200, 500]  # 500 is acceptable if Stripe not configured
@@ -218,8 +218,8 @@ class GizzleTVAPITester:
     def test_purchase_checkout(self):
         """Test in-app purchase checkout creation"""
         try:
-            data = {"item_id": "premium_upload"}
-            response = requests.post(f"{self.base_url}/purchases/checkout", json=data, timeout=10)
+            # Send item_id as query parameter
+            response = requests.post(f"{self.base_url}/purchases/checkout?item_id=premium_upload", timeout=10)
             
             # This might fail if Stripe is not configured, which is expected
             success = response.status_code in [200, 500]  # 500 is acceptable if Stripe not configured
