@@ -470,8 +470,141 @@ const SubscriptionPlans = () => {
   );
 };
 
-// Store Component  
-const StoreSection = () => {
+// Gizzle TV Section Component
+const GizzleTVSection = () => {
+  return (
+    <div className="gizzle-tv-section">
+      <div className="section-header">
+        <h2>Gizzle TV</h2>
+        <p>Featured content from our entertainment network</p>
+      </div>
+
+      <div className="featured-content">
+        <div className="main-feature">
+          <div className="video-container">
+            <video 
+              className="featured-video"
+              controls
+              poster="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
+            >
+              <source 
+                src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4" 
+                type="video/mp4" 
+              />
+              Your browser does not support the video tag.
+            </video>
+            
+            <div className="video-overlay">
+              <div className="video-info">
+                <h3>Rimmington</h3>
+                <p className="video-description">
+                  Exclusive Gizzle TV content featuring stunning visuals and entertainment
+                </p>
+                <div className="video-stats">
+                  <span className="stat-item">
+                    <Play size={16} />
+                    Featured Video
+                  </span>
+                  <span className="stat-item">
+                    <Star size={16} />
+                    Premium Content
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Content Grid */}
+        <div className="content-grid">
+          <div className="content-card">
+            <div className="content-image">
+              <img 
+                src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14" 
+                alt="Entertainment Setup"
+              />
+              <div className="play-button">
+                <Play size={24} />
+              </div>
+            </div>
+            <div className="content-info">
+              <h4>Entertainment Hub</h4>
+              <p>Your ultimate streaming destination</p>
+            </div>
+          </div>
+
+          <div className="content-card">
+            <div className="content-image">
+              <img 
+                src="https://images.unsplash.com/photo-1735212659418-715ca2ff7c20" 
+                alt="Multi-Platform"
+              />
+              <div className="play-button">
+                <Play size={24} />
+              </div>
+            </div>
+            <div className="content-info">
+              <h4>Multi-Platform Access</h4>
+              <p>Watch anywhere, anytime</p>
+            </div>
+          </div>
+
+          <div className="content-card">
+            <div className="content-image">
+              <img 
+                src="https://images.unsplash.com/photo-1726935068680-73cef7e8412b" 
+                alt="Mobile Experience"
+              />
+              <div className="play-button">
+                <Play size={24} />
+              </div>
+            </div>
+            <div className="content-info">
+              <h4>Mobile Experience</h4>
+              <p>Optimized for mobile viewing</p>
+            </div>
+          </div>
+
+          <div className="content-card">
+            <div className="content-image">
+              <img 
+                src="https://images.unsplash.com/photo-1685440663653-fa3e81dd109c" 
+                alt="Streaming Technology"
+              />
+              <div className="play-button">
+                <Play size={24} />
+              </div>
+            </div>
+            <div className="content-info">
+              <h4>Latest Technology</h4>
+              <p>Cutting-edge streaming tech</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="gizzle-cta">
+          <h3>Ready to Experience Gizzle TV?</h3>
+          <p>Join our premium membership for exclusive access to all content</p>
+          <div className="cta-buttons">
+            <button 
+              className="btn-primary cta-btn"
+              onClick={() => window.scrollTo(0, 0)}
+            >
+              Subscribe Now
+            </button>
+            <button 
+              className="btn-secondary cta-btn"
+              onClick={() => window.scrollTo(0, 0)}
+            >
+              Learn More
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
   const storeItems = [
     {
       id: 'premium_upload',
