@@ -1462,59 +1462,6 @@ body {
   .members-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-
-  /* Video Player Mobile */
-  .video-player-container {
-    width: 95vw;
-    max-height: 95vh;
-  }
-
-  .video-player-controls {
-    padding: 1.5rem 1rem 1rem;
-  }
-
-  .video-player-controls-bottom {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-
-  .video-player-controls-left,
-  .video-player-controls-right {
-    justify-content: center;
-  }
-
-  .video-player-volume {
-    justify-content: center;
-  }
-
-  .volume-slider {
-    width: 120px;
-  }
-
-  .video-player-info {
-    top: 80px;
-    left: 12px;
-    right: 12px;
-  }
-
-  .video-player-info h3 {
-    font-size: 1.2rem;
-  }
-
-  .video-player-info p {
-    font-size: 0.9rem;
-  }
-
-  .video-player-play-button {
-    width: 60px;
-    height: 60px;
-  }
-
-  .featured-video-poster {
-    min-height: 250px;
-    max-height: 400px;
-  }
 }
 
 @media (max-width: 480px) {
