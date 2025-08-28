@@ -83,6 +83,35 @@ class SubscriptionPlan(BaseModel):
     features: List[str]
     is_popular: bool = False
 
+class ModelProfile(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    username: str
+    category: str
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    verification_status: str = "pending"  # pending, verified, rejected
+    subscription_count: int = 0
+    video_count: int = 0
+    total_views: int = 0
+    rating: float = 0.0
+    joined_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    social_links: Dict[str, str] = Field(default_factory=dict)
+    tags: List[str] = Field(default_factory=list)
+    is_featured: bool = False
+    subscription_price: Optional[float] = None
+
+class ModelProfileCreate(BaseModel):
+    name: str
+    username: str
+    category: str
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    social_links: Dict[str, str] = Field(default_factory=dict)
+    tags: List[str] = Field(default_factory=list)
+    subscription_price: Optional[float] = None
+
 class PaymentTransaction(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     session_id: str
