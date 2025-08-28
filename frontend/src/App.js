@@ -3,7 +3,7 @@ import "./App.css";
 import "./VideoPlayer.css";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { Upload, Play, Image, Users, Crown, ShoppingBag, Menu, X, Star, Check, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward } from "lucide-react";
+import { Upload, Play, Image, Users, Crown, ShoppingBag, Menu, X, Star, Check, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, ChevronLeft, ChevronRight, Info } from "lucide-react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -286,108 +286,189 @@ const VideoPlayer = ({ isOpen, onClose, videoSrc, title, description, poster }) 
   );
 };
 
-// Hero Section Component
-const HeroSection = () => {
+// Netflix-style Header
+const NetflixHeader = ({ activeSection, setActiveSection }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="hero-section">
-      <div className="hero-background">
-        <img 
-          src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14" 
-          alt="Entertainment Platform"
-          className="hero-image"
-        />
-        <div className="hero-overlay"></div>
-      </div>
-      <div className="hero-content">
-        <div className="hero-logo">
+    <header className={`netflix-header ${isScrolled ? 'scrolled' : ''}`}>
+      <div className="header-left">
+        <div className="logo">
           <img 
             src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
-            alt="Gizzle TV L.L.C."
-            className="logo-image"
+            alt="Gizzle TV"
+            className="logo-img"
           />
+          <span className="logo-text">Gizzle TV</span>
         </div>
-        <h1 className="hero-title">Welcome to Gizzle TV L.L.C.</h1>
-        <p className="hero-subtitle">Your ultimate entertainment platform for videos, pictures, live streams, and community content.</p>
+        
+        <nav className="main-nav">
+          <button 
+            className={`nav-item ${activeSection === 'home' ? 'active' : ''}`}
+            onClick={() => setActiveSection('home')}
+          >
+            Home
+          </button>
+          <button 
+            className={`nav-item ${activeSection === 'gizzle-tv' ? 'active' : ''}`}
+            onClick={() => setActiveSection('gizzle-tv')}
+          >
+            Gizzle TV
+          </button>
+          <button 
+            className={`nav-item ${activeSection === 'videos' ? 'active' : ''}`}
+            onClick={() => setActiveSection('videos')}
+          >
+            Videos
+          </button>
+          <button 
+            className={`nav-item ${activeSection === 'pictures' ? 'active' : ''}`}
+            onClick={() => setActiveSection('pictures')}
+          >
+            Pictures
+          </button>
+          <button 
+            className={`nav-item ${activeSection === 'community' ? 'active' : ''}`}
+            onClick={() => setActiveSection('community')}
+          >
+            Community
+          </button>
+        </nav>
+      </div>
+
+      <div className="header-right">
+        <button 
+          className={`nav-item ${activeSection === 'subscriptions' ? 'active' : ''}`}
+          onClick={() => setActiveSection('subscriptions')}
+        >
+          <Crown size={16} />
+          Premium
+        </button>
+        <button 
+          className={`nav-item ${activeSection === 'store' ? 'active' : ''}`}
+          onClick={() => setActiveSection('store')}
+        >
+          <ShoppingBag size={16} />
+          Store
+        </button>
+        <div className="profile-menu">
+          <div className="profile-avatar">
+            <Users size={20} />
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+// Netflix-style Hero Banner
+const HeroBanner = ({ onPlayClick }) => {
+  const heroContent = {
+    src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4",
+    title: "Rimmington",
+    description: "Experience the ultimate entertainment with Gizzle TV's exclusive content. Dive into a world of premium videos, community features, and unlimited streaming.",
+    poster: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
+  };
+
+  return (
+    <div className="hero-banner">
+      <div className="hero-background">
+        <img 
+          src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14"
+          alt="Hero Background"
+          className="hero-bg-img"
+        />
+        <div className="hero-gradient"></div>
+      </div>
+      
+      <div className="hero-content">
+        <h1 className="hero-title">Welcome to Gizzle TV</h1>
+        <p className="hero-description">
+          {heroContent.description}
+        </p>
+        
         <div className="hero-buttons">
-          <button className="btn-primary">Start Creating</button>
-          <button className="btn-secondary">Explore Content</button>
+          <button 
+            className="hero-btn primary"
+            onClick={() => onPlayClick(heroContent)}
+          >
+            <Play size={20} />
+            Play Now
+          </button>
+          <button className="hero-btn secondary">
+            <Info size={20} />
+            More Info
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-// Navigation Component
-const Navigation = ({ activeTab, setActiveTab, isMobileMenuOpen, setIsMobileMenuOpen }) => {
-  const navItems = [
-    { id: 'home', label: 'Home', icon: <Star size={20} /> },
-    { id: 'gizzle-tv', label: 'Gizzle TV', icon: <Play size={20} /> },
-    { id: 'videos', label: 'Videos', icon: <Upload size={20} /> },
-    { id: 'pictures', label: 'Pictures', icon: <Image size={20} /> },
-    { id: 'live-streams', label: 'Live Streams', icon: <Upload size={20} /> },
-    { id: 'community', label: 'Community', icon: <Users size={20} /> },
-    { id: 'subscriptions', label: 'Subscriptions', icon: <Crown size={20} /> },
-    { id: 'store', label: 'Store', icon: <ShoppingBag size={20} /> },
-  ];
+// Content Row Component
+const ContentRow = ({ title, items, onItemClick }) => {
+  const scrollRef = useRef(null);
+
+  const scroll = (direction) => {
+    const container = scrollRef.current;
+    const scrollAmount = 320;
+    
+    if (container) {
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
-    <nav className="navigation">
-      <div className="nav-container">
-        <div className="nav-brand">
-          <img 
-            src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
-            alt="Gizzle TV"
-            className="nav-logo"
-          />
-          <span className="nav-title">Gizzle TV</span>
+    <div className="content-row">
+      <h2 className="row-title">{title}</h2>
+      <div className="row-container">
+        <button className="scroll-btn left" onClick={() => scroll('left')}>
+          <ChevronLeft size={24} />
+        </button>
+        
+        <div className="content-slider" ref={scrollRef}>
+          {items.map((item, index) => (
+            <div 
+              key={index} 
+              className="content-card"
+              onClick={() => onItemClick && onItemClick(item)}
+            >
+              <div className="card-image">
+                <img src={item.image} alt={item.title} />
+                <div className="card-overlay">
+                  <button className="play-btn">
+                    <Play size={24} />
+                  </button>
+                </div>
+              </div>
+              <div className="card-info">
+                <h4>{item.title}</h4>
+                <p>{item.category}</p>
+              </div>
+            </div>
+          ))}
         </div>
         
-        {/* Desktop Navigation */}
-        <div className="nav-links desktop-nav">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              className={`nav-link ${activeTab === item.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Mobile Menu Toggle */}
-        <button 
-          className="mobile-menu-toggle"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        <button className="scroll-btn right" onClick={() => scroll('right')}>
+          <ChevronRight size={24} />
         </button>
       </div>
-
-      {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
-        <div className="mobile-nav">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              className={`mobile-nav-link ${activeTab === item.id ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab(item.id);
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </nav>
+    </div>
   );
 };
 
-// Upload Component
+// Upload Section Component
 const UploadSection = ({ category }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -447,9 +528,10 @@ const UploadSection = ({ category }) => {
   };
 
   return (
-    <div className="upload-section">
+    <div className="netflix-upload-section">
+      <h2>Upload Your Content</h2>
       <div 
-        className={`upload-dropzone ${dragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
+        className={`upload-zone ${dragActive ? 'drag-active' : ''} ${uploading ? 'uploading' : ''}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -464,7 +546,7 @@ const UploadSection = ({ category }) => {
         />
         <div className="upload-content">
           <Upload size={48} className="upload-icon" />
-          <h3>Drop your {category.slice(0, -1)} here</h3>
+          <h3>Drag and drop your {category.slice(0, -1)} here</h3>
           <p>or click to browse files</p>
           {uploadStatus && (
             <div className={`upload-status ${uploadStatus.includes('successful') ? 'success' : uploadStatus.includes('failed') ? 'error' : 'info'}`}>
@@ -477,456 +559,226 @@ const UploadSection = ({ category }) => {
   );
 };
 
-// Content Gallery Component
-const ContentGallery = ({ category }) => {
-  const [content, setContent] = useState([]);
-  const [loading, setLoading] = useState(true);
+// Main App Component
+function App() {
+  const [activeSection, setActiveSection] = useState('home');
   const [videoPlayerOpen, setVideoPlayerOpen] = useState(false);
   const [currentVideo, setCurrentVideo] = useState(null);
+  const [contentData, setContentData] = useState({
+    trending: [],
+    featured: [],
+    community: [],
+    recent: []
+  });
 
+  // Sample data for Netflix-style rows
   useEffect(() => {
-    fetchContent();
-  }, [category]);
-
-  const fetchContent = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${API}/content/${category}`);
-      setContent(response.data);
-    } catch (error) {
-      console.error('Error fetching content:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const openVideoPlayer = (item) => {
-    if (category === 'videos') {
-      setCurrentVideo({
-        src: `${API}/content/file/${item.filename}`,
-        title: item.original_filename,
-        description: item.description || `Uploaded on ${new Date(item.upload_timestamp).toLocaleDateString()}`,
-        poster: item.thumbnail_id ? `${API}/content/file/${item.thumbnail_id}` : null
-      });
-      setVideoPlayerOpen(true);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="content-gallery">
-        <div className="loading-state">
-          <div className="loading-spinner"></div>
-          <p>Loading {category}...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="content-gallery">
-      <div className="gallery-header">
-        <h2>Your {category}</h2>
-        <span className="content-count">{content.length} items</span>
-      </div>
-      
-      {content.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">
-            {category === 'videos' ? <Play size={64} /> : 
-             category === 'pictures' ? <Image size={64} /> : 
-             <Upload size={64} />}
-          </div>
-          <h3>No {category} uploaded yet</h3>
-          <p>Start by uploading your first {category.slice(0, -1)}!</p>
-        </div>
-      ) : (
-        <div className="gallery-grid">
-          {content.map((item) => (
-            <div key={item.id} className="gallery-item" onClick={() => openVideoPlayer(item)}>
-              <div className="item-preview">
-                {category === 'pictures' ? (
-                  <img 
-                    src={`${API}/content/file/${item.filename}`}
-                    alt={item.original_filename}
-                    className="preview-image"
-                  />
-                ) : (
-                  <div className="video-preview">
-                    <video 
-                      src={`${API}/content/file/${item.filename}`}
-                      className="preview-video"
-                      muted
-                    />
-                    <div className="play-overlay">
-                      <Play size={32} />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="item-info">
-                <h4>{item.original_filename}</h4>
-                <p className="item-date">
-                  {new Date(item.upload_timestamp).toLocaleDateString()}
-                </p>
-                {item.tags && item.tags.length > 0 && (
-                  <div className="item-tags">
-                    {item.tags.slice(0, 3).map((tag, index) => (
-                      <span key={index} className="tag">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Video Player */}
-      {videoPlayerOpen && currentVideo && (
-        <VideoPlayer
-          isOpen={videoPlayerOpen}
-          onClose={() => setVideoPlayerOpen(false)}
-          videoSrc={currentVideo.src}
-          title={currentVideo.title}
-          description={currentVideo.description}
-          poster={currentVideo.poster}
-        />
-      )}
-    </div>
-  );
-};
-
-// Community Component
-const CommunitySection = () => {
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchMembers();
+    setContentData({
+      trending: [
+        { 
+          title: "Gizzle Summer", 
+          category: "Featured",
+          image: "https://images.unsplash.com/photo-1735212769704-d03b95dd1a14",
+          video: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ttfzvpjp_GizzleSummer2.mp4"
+        },
+        { 
+          title: "Entertainment Hub", 
+          category: "Original",
+          image: "https://images.unsplash.com/photo-1735212659418-715ca2ff7c20"
+        },
+        { 
+          title: "Mobile Experience", 
+          category: "Series",
+          image: "https://images.unsplash.com/photo-1726935068680-73cef7e8412b"
+        },
+        { 
+          title: "Streaming Tech", 
+          category: "Documentary",
+          image: "https://images.unsplash.com/photo-1685440663653-fa3e81dd109c"
+        },
+        { 
+          title: "Platform Features", 
+          category: "Original",
+          image: "https://images.unsplash.com/photo-1616469829941-c7200edec809"
+        }
+      ],
+      featured: [
+        { 
+          title: "Rimmington", 
+          category: "Exclusive",
+          image: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg",
+          video: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4"
+        },
+        { 
+          title: "Community Highlights", 
+          category: "Community",
+          image: "https://images.unsplash.com/photo-1735212769704-d03b95dd1a14"
+        },
+        { 
+          title: "Live Streaming", 
+          category: "Live",
+          image: "https://images.unsplash.com/photo-1685440663653-fa3e81dd109c"
+        }
+      ]
+    });
   }, []);
-
-  const fetchMembers = async () => {
-    try {
-      const response = await axios.get(`${API}/community/members`);
-      setMembers(response.data);
-    } catch (error) {
-      console.error('Error fetching members:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="community-section">
-      <div className="section-header">
-        <h2>Community Members</h2>
-        <p>Connect with fellow creators and entertainers</p>
-      </div>
-
-      <div className="community-features">
-        <div className="feature-card">
-          <img 
-            src="https://images.unsplash.com/photo-1726935068680-73cef7e8412b" 
-            alt="Mobile Community"
-            className="feature-image"
-          />
-          <div className="feature-content">
-            <h3>Mobile Community</h3>
-            <p>Stay connected on the go with our mobile community features</p>
-          </div>
-        </div>
-
-        <div className="feature-card">
-          <img 
-            src="https://images.unsplash.com/photo-1616469829941-c7200edec809" 
-            alt="Cross Platform"
-            className="feature-image"
-          />
-          <div className="feature-content">
-            <h3>Cross-Platform Access</h3>
-            <p>Access your content and community from any device</p>
-          </div>
-        </div>
-
-        <div className="feature-card">
-          <img 
-            src="https://images.unsplash.com/photo-1685440663653-fa3e81dd109c" 
-            alt="Streaming Features"
-            className="feature-image"
-          />
-          <div className="feature-content">
-            <h3>Live Streaming</h3>
-            <p>Share your content live with the community</p>
-          </div>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="loading-state">
-          <div className="loading-spinner"></div>
-          <p>Loading community members...</p>
-        </div>
-      ) : (
-        <div className="members-grid">
-          {members.slice(0, 12).map((member) => (
-            <div key={member.id} className="member-card">
-              <div className="member-avatar">
-                <Users size={32} />
-              </div>
-              <div className="member-info">
-                <h4>{member.display_name}</h4>
-                <p className="member-username">@{member.username}</p>
-                <span className={`subscription-badge ${member.subscription_status}`}>
-                  {member.subscription_status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Subscription Plans Component
-const SubscriptionPlans = () => {
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPlans();
-  }, []);
-
-  const fetchPlans = async () => {
-    try {
-      const response = await axios.get(`${API}/subscriptions/plans`);
-      setPlans(response.data);
-    } catch (error) {
-      console.error('Error fetching plans:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubscribe = async (planId) => {
-    try {
-      const response = await axios.post(`${API}/subscriptions/checkout?plan_id=${planId}`);
-      
-      // In a real implementation, this would redirect to Stripe
-      window.open(response.data.checkout_url, '_blank');
-    } catch (error) {
-      console.error('Subscription error:', error);
-    }
-  };
-
-  return (
-    <div className="subscription-plans">
-      <div className="section-header">
-        <h2>Choose Your Plan</h2>
-        <p>Unlock premium features with our subscription plans</p>
-      </div>
-
-      {loading ? (
-        <div className="loading-state">
-          <div className="loading-spinner"></div>
-          <p>Loading subscription plans...</p>
-        </div>
-      ) : (
-        <div className="plans-grid">
-          {plans.map((plan) => (
-            <div key={plan.id} className={`plan-card ${plan.is_popular ? 'popular' : ''}`}>
-              {plan.is_popular && (
-                <div className="popular-badge">
-                  <Star size={16} />
-                  Most Popular
-                </div>
-              )}
-              
-              <div className="plan-header">
-                <h3>{plan.name}</h3>
-                <div className="plan-price">
-                  <span className="currency">$</span>
-                  <span className="amount">{plan.price}</span>
-                  <span className="interval">/{plan.interval}</span>
-                </div>
-              </div>
-
-              <div className="plan-features">
-                {plan.features.map((feature, index) => (
-                  <div key={index} className="feature-item">
-                    <Check size={16} className="check-icon" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button 
-                className={`plan-button ${plan.is_popular ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => handleSubscribe(plan.id)}
-              >
-                Subscribe Now
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Gizzle TV Section Component
-const GizzleTVSection = () => {
-  const [videoPlayerOpen, setVideoPlayerOpen] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState(null);
 
   const openVideoPlayer = (videoData) => {
-    setCurrentVideo(videoData);
+    setCurrentVideo({
+      src: videoData.video || videoData.src,
+      title: videoData.title,
+      description: videoData.description || `Watch ${videoData.title} on Gizzle TV`,
+      poster: videoData.image || videoData.poster
+    });
     setVideoPlayerOpen(true);
   };
 
-  const featuredVideo = {
-    src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/hd2ztl4a_Rimmington.mp4",
-    title: "Rimmington",
-    description: "Exclusive Gizzle TV content featuring stunning visuals and entertainment",
-    poster: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'home':
+        return (
+          <div className="netflix-home">
+            <HeroBanner onPlayClick={openVideoPlayer} />
+            <div className="content-rows">
+              <ContentRow 
+                title="Trending Now" 
+                items={contentData.trending}
+                onItemClick={openVideoPlayer}
+              />
+              <ContentRow 
+                title="Gizzle TV Originals" 
+                items={contentData.featured}
+                onItemClick={openVideoPlayer}
+              />
+              <ContentRow 
+                title="Continue Watching" 
+                items={contentData.trending.slice(1, 4)}
+                onItemClick={openVideoPlayer}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'gizzle-tv':
+        return (
+          <div className="netflix-section">
+            <div className="section-hero">
+              <div className="section-hero-bg">
+                <img src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg" alt="Gizzle TV" />
+                <div className="section-hero-gradient"></div>
+              </div>
+              <div className="section-hero-content">
+                <h1>Gizzle TV Exclusives</h1>
+                <p>Premium content created exclusively for our community</p>
+              </div>
+            </div>
+            <div className="content-rows">
+              <ContentRow 
+                title="Featured Content" 
+                items={contentData.featured}
+                onItemClick={openVideoPlayer}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'videos':
+        return (
+          <div className="netflix-section">
+            <UploadSection category="videos" />
+            <div className="content-rows">
+              <ContentRow 
+                title="Your Videos" 
+                items={contentData.trending}
+                onItemClick={openVideoPlayer}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'pictures':
+        return (
+          <div className="netflix-section">
+            <UploadSection category="pictures" />
+            <div className="content-rows">
+              <ContentRow 
+                title="Your Pictures" 
+                items={contentData.trending}
+              />
+            </div>
+          </div>
+        );
+      
+      case 'subscriptions':
+        return (
+          <div className="netflix-section subscription-plans">
+            <div className="plans-header">
+              <h1>Choose Your Plan</h1>
+              <p>Unlock premium features and exclusive content</p>
+            </div>
+            
+            <div className="plans-container">
+              <div className="plan-card">
+                <h3>Basic</h3>
+                <div className="plan-price">$9.99<span>/month</span></div>
+                <ul className="plan-features">
+                  <li>Upload videos up to 100MB</li>
+                  <li>5 videos per day</li>
+                  <li>Basic community access</li>
+                </ul>
+                <button className="plan-btn">Choose Basic</button>
+              </div>
+              
+              <div className="plan-card featured">
+                <div className="popular-badge">Most Popular</div>
+                <h3>Premium</h3>
+                <div className="plan-price">$19.99<span>/month</span></div>
+                <ul className="plan-features">
+                  <li>Upload videos up to 1GB</li>
+                  <li>Unlimited uploads</li>
+                  <li>Premium community features</li>
+                  <li>Live streaming access</li>
+                </ul>
+                <button className="plan-btn primary">Choose Premium</button>
+              </div>
+              
+              <div className="plan-card">
+                <h3>VIP</h3>
+                <div className="plan-price">$39.99<span>/month</span></div>
+                <ul className="plan-features">
+                  <li>Unlimited everything</li>
+                  <li>Priority support</li>
+                  <li>Exclusive community access</li>
+                  <li>Advanced analytics</li>
+                </ul>
+                <button className="plan-btn">Choose VIP</button>
+              </div>
+            </div>
+          </div>
+        );
+      
+      default:
+        return (
+          <div className="netflix-section">
+            <div className="coming-soon">
+              <h1>Coming Soon</h1>
+              <p>This section is under development</p>
+            </div>
+          </div>
+        );
+    }
   };
 
   return (
-    <div className="gizzle-tv-section">
-      <div className="section-header">
-        <h2>Gizzle TV</h2>
-        <p>Featured content from our entertainment network</p>
-      </div>
-
-      <div className="featured-content">
-        <div className="main-feature">
-          <div className="video-container" onClick={() => openVideoPlayer(featuredVideo)}>
-            <img 
-              src={featuredVideo.poster}
-              alt={featuredVideo.title}
-              className="featured-video-poster"
-            />
-            
-            <div className="video-play-overlay">
-              <div className="video-play-button">
-                <Play size={48} />
-              </div>
-            </div>
-            
-            <div className="video-overlay">
-              <div className="video-info">
-                <h3>{featuredVideo.title}</h3>
-                <p className="video-description">
-                  {featuredVideo.description}
-                </p>
-                <div className="video-stats">
-                  <span className="stat-item">
-                    <Play size={16} />
-                    Featured Video
-                  </span>
-                  <span className="stat-item">
-                    <Star size={16} />
-                    Premium Content
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Content Grid */}
-        <div className="content-grid">
-          <div className="content-card" onClick={() => openVideoPlayer({
-            src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ttfzvpjp_GizzleSummer2.mp4",
-            title: "Gizzle Summer",
-            description: "Summer entertainment special from Gizzle TV",
-            poster: "https://images.unsplash.com/photo-1735212769704-d03b95dd1a14"
-          })}>
-            <div className="content-image">
-              <img 
-                src="https://images.unsplash.com/photo-1735212769704-d03b95dd1a14" 
-                alt="Entertainment Setup"
-              />
-              <div className="play-button">
-                <Play size={24} />
-              </div>
-            </div>
-            <div className="content-info">
-              <h4>Entertainment Hub</h4>
-              <p>Your ultimate streaming destination</p>
-            </div>
-          </div>
-
-          <div className="content-card">
-            <div className="content-image">
-              <img 
-                src="https://images.unsplash.com/photo-1735212659418-715ca2ff7c20" 
-                alt="Multi-Platform"
-              />
-              <div className="play-button">
-                <Play size={24} />
-              </div>
-            </div>
-            <div className="content-info">
-              <h4>Multi-Platform Access</h4>
-              <p>Watch anywhere, anytime</p>
-            </div>
-          </div>
-
-          <div className="content-card">
-            <div className="content-image">
-              <img 
-                src="https://images.unsplash.com/photo-1726935068680-73cef7e8412b" 
-                alt="Mobile Experience"
-              />
-              <div className="play-button">
-                <Play size={24} />
-              </div>
-            </div>
-            <div className="content-info">
-              <h4>Mobile Experience</h4>
-              <p>Optimized for mobile viewing</p>
-            </div>
-          </div>
-
-          <div className="content-card">
-            <div className="content-image">
-              <img 
-                src="https://images.unsplash.com/photo-1685440663653-fa3e81dd109c" 
-                alt="Streaming Technology"
-              />
-              <div className="play-button">
-                <Play size={24} />
-              </div>
-            </div>
-            <div className="content-info">
-              <h4>Latest Technology</h4>
-              <p>Cutting-edge streaming tech</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div className="gizzle-cta">
-          <h3>Ready to Experience Gizzle TV?</h3>
-          <p>Join our premium membership for exclusive access to all content</p>
-          <div className="cta-buttons">
-            <button 
-              className="btn-primary cta-btn"
-              onClick={() => window.scrollTo(0, 0)}
-            >
-              Subscribe Now
-            </button>
-            <button 
-              className="btn-secondary cta-btn"
-              onClick={() => window.scrollTo(0, 0)}
-            >
-              Learn More
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="netflix-app">
+      <NetflixHeader 
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
+      
+      <main className="netflix-main">
+        {renderContent()}
+      </main>
 
       {/* Video Player */}
       {videoPlayerOpen && currentVideo && (
@@ -939,140 +791,6 @@ const GizzleTVSection = () => {
           poster={currentVideo.poster}
         />
       )}
-    </div>
-  );
-};
-
-// Store Component  
-const StoreSection = () => {
-  const storeItems = [
-    {
-      id: 'premium_upload',
-      name: 'Premium Upload Credits',
-      price: 4.99,
-      description: '10 premium upload credits for larger files',
-      icon: <Upload size={32} />
-    },
-    {
-      id: 'live_stream_hours',
-      name: 'Live Stream Hours',
-      price: 9.99,
-      description: '5 additional hours of live streaming',
-      icon: <Play size={32} />
-    },
-    {
-      id: 'premium_features',
-      name: 'Premium Features',
-      price: 2.99,
-      description: 'Unlock advanced editing and analytics tools',
-      icon: <Star size={32} />
-    }
-  ];
-
-  const handlePurchase = async (itemId) => {
-    try {
-      const response = await axios.post(`${API}/purchases/checkout?item_id=${itemId}`);
-      
-      // In a real implementation, this would redirect to Stripe
-      window.open(response.data.checkout_url, '_blank');
-    } catch (error) {
-      console.error('Purchase error:', error);
-    }
-  };
-
-  return (
-    <div className="store-section">
-      <div className="section-header">
-        <h2>In-App Store</h2>
-        <p>Enhance your experience with premium add-ons</p>
-      </div>
-
-      <div className="store-grid">
-        {storeItems.map((item) => (
-          <div key={item.id} className="store-item">
-            <div className="store-item-icon">
-              {item.icon}
-            </div>
-            <div className="store-item-info">
-              <h3>{item.name}</h3>
-              <p>{item.description}</p>
-              <div className="store-item-price">
-                ${item.price}
-              </div>
-            </div>
-            <button 
-              className="btn-primary store-button"
-              onClick={() => handlePurchase(item.id)}
-            >
-              Purchase
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Main App Component
-function App() {
-  const [activeTab, setActiveTab] = useState('home');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HeroSection />;
-      case 'gizzle-tv':
-        return <GizzleTVSection />;
-      case 'videos':
-        return (
-          <div className="content-section">
-            <h1 className="section-title">Videos</h1>
-            <UploadSection category="videos" />
-            <ContentGallery category="videos" />
-          </div>
-        );
-      case 'pictures':
-        return (
-          <div className="content-section">
-            <h1 className="section-title">Pictures</h1>
-            <UploadSection category="pictures" />
-            <ContentGallery category="pictures" />
-          </div>
-        );
-      case 'live-streams':
-        return (
-          <div className="content-section">
-            <h1 className="section-title">Live Streams</h1>
-            <div className="coming-soon">
-              <Upload size={64} />
-              <h3>Live Streaming Coming Soon!</h3>
-              <p>We're working on bringing you the best live streaming experience.</p>
-            </div>
-          </div>
-        );
-      case 'community':
-        return <CommunitySection />;
-      case 'subscriptions':
-        return <SubscriptionPlans />;
-      case 'store':
-        return <StoreSection />;
-      default:
-        return <HeroSection />;
-    }
-  };
-
-  return (
-    <div className="App">
-      <Navigation 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-      />
-      <main className="main-content">
-        {renderContent()}
-      </main>
     </div>
   );
 }
