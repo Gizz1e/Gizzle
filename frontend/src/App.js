@@ -1082,10 +1082,73 @@ function App() {
                 <p>Premium content created exclusively for our community</p>
               </div>
             </div>
+            
             <div className="content-rows">
+              {/* Retrospective Featured Section */}
+              <div className="retrospective-section">
+                <h2 className="row-title featured-title">Retrospective</h2>
+                <p className="featured-subtitle">A cinematic journey through our finest moments</p>
+                
+                <div className="retrospective-featured">
+                  <div 
+                    className="retrospective-card"
+                    onClick={() => openVideoPlayer({
+                      src: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/jzu6cqn5_AVAssetExportPreset3840x21602.mp4",
+                      title: "Retrospective",
+                      description: "A premium cinematic experience showcasing the finest moments and artistic vision of Gizzle TV. This exclusive 4K content represents the pinnacle of our creative journey.",
+                      poster: "https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg"
+                    })}
+                  >
+                    <div className="retrospective-image">
+                      <img 
+                        src="https://customer-assets.emergentagent.com/job_media-upload-2/artifacts/ysim4ger_thumbnail_FD3537EB-E493-45C7-8E2E-1C6F4DC548FB.jpg" 
+                        alt="Retrospective"
+                      />
+                      <div className="retrospective-overlay">
+                        <div className="retrospective-play-btn">
+                          <Play size={48} />
+                        </div>
+                        <div className="video-quality-badge">4K UHD</div>
+                      </div>
+                    </div>
+                    
+                    <div className="retrospective-info">
+                      <div className="retrospective-header">
+                        <h3>Retrospective</h3>
+                        <div className="retrospective-badges">
+                          <span className="exclusive-badge">
+                            <Star size={14} />
+                            Exclusive
+                          </span>
+                          <span className="premium-badge">
+                            <Crown size={14} />
+                            Premium
+                          </span>
+                        </div>
+                      </div>
+                      <p className="retrospective-description">
+                        A premium cinematic experience showcasing the artistic vision and finest moments of Gizzle TV's creative journey.
+                      </p>
+                      <div className="retrospective-meta">
+                        <span className="duration">Featured Length</span>
+                        <span className="quality">Ultra HD Quality</span>
+                        <span className="year">2024</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Other Gizzle TV Content */}
               <ContentRow 
-                title="Featured Content" 
+                title="Featured Originals" 
                 items={contentData.featured}
+                onItemClick={openVideoPlayer}
+              />
+              
+              <ContentRow 
+                title="Latest Releases" 
+                items={contentData.trending.slice(0, 3)}
                 onItemClick={openVideoPlayer}
               />
             </div>
