@@ -497,9 +497,7 @@ const StoreSection = () => {
 
   const handlePurchase = async (itemId) => {
     try {
-      const response = await axios.post(`${API}/purchases/checkout`, {
-        item_id: itemId
-      });
+      const response = await axios.post(`${API}/purchases/checkout?item_id=${itemId}`);
       
       // In a real implementation, this would redirect to Stripe
       window.open(response.data.checkout_url, '_blank');
